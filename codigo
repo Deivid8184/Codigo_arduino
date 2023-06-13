@@ -1,0 +1,91 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#define sensorOnOff 7
+#define sensorPin A0
+#include<Servo.h>
+Servo servomotor;
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+
+const int trigPin = 11;
+const int echoPin = 12;
+
+void setup() {
+  {servomotor.attach(3);
+  }
+  {
+
+  pinMode(sensorOnOff, OUTPUT);
+
+  digitalWrite(sensorOnOff, LOW);
+
+  Serial.begin(9600);
+  }
+  lcd.init();
+  lcd.begin(16, 2);
+  lcd.backlight();
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  Serial.println("Configuración lista");
+}
+void loop() {
+
+  int value= analogRead(A1);
+  if(value<300){
+    servomotor.write(180);
+  }
+  else{
+    servomotor.write(0);
+  }
+
+  digitalWrite(sensorOnOff, HIGH);
+
+
+  delay(10);
+
+
+  int valor = analogRead(sensorPin);
+
+  Serial.print("Nivel de humedad ");
+  Serial.println(valor);
+
+
+  digitalWrite(sensorOnOff, LOW);
+  delay(1000);
+
+
+  lcd.clear();
+
+  int distance;
+  distance = getDistance();
+  Serial.println(distance);
+  lcd.setCursor(0, 0);
+  lcd.print("UltraSonic");
+  lcd.setCursor(0, 1);
+  lcd.print("distance : ");
+  lcd.print(distance);
+
+  delay(200);
+ 
+}
+
+
+
+
+float getDistance()
+{
+  float echoTime;
+  long  inches, cm;
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  echoTime = pulseIn(echoPin, HIGH);
+  cm = echoTime / 29 / 2;
+  inches = echoTime / 74 / 2;
+  lcd.setCursor (0,1); 
+
+  return cm;
+}
